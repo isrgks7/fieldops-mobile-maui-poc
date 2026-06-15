@@ -1,6 +1,10 @@
 # fieldops-mobile-maui-poc
 Offline-first .NET MAUI proof of concept for field work order management, built with Clean Architecture, MVVM, SQLite, dependency injection, repository pattern, sync simulation, and unit tests.
 
+## Demo
+
+[![FieldOps Mobile Demo](https://img.youtube.com/vi/yv8lc6q6yf0/hqdefault.jpg)](https://youtu.be/yv8lc6q6yf0)
+
 ## Features
 
 - **Dashboard** - summary cards (total, open, in progress, completed, pending sync), last sync time, sync now
