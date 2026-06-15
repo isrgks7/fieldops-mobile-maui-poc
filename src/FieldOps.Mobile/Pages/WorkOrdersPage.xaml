@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:FieldOps.Mobile.ViewModels"
+             xmlns:dto="clr-namespace:FieldOps.Application.DTOs;assembly=FieldOps.Application"
+             x:Class="FieldOps.Mobile.Pages.WorkOrdersPage"
+             x:DataType="vm:WorkOrdersViewModel"
+             Title="{Binding Title}">
+
+    <Grid RowDefinitions="Auto,Auto,*" Padding="20" RowSpacing="12">
+
+        <SearchBar Grid.Row="0"
+                   Placeholder="Search by customer or title"
+                   Text="{Binding SearchText}" />
+
+        <ScrollView Grid.Row="1" Orientation="Horizontal">
+            <HorizontalStackLayout Spacing="8">
+                <Button Text="All" Command="{Binding ApplyFilterCommand}" CommandParameter="{x:Static dto:WorkOrderListFilter.All}" Style="{StaticResource FilterChipStyle}" />
+                <Button Text="Open" Command="{Binding ApplyFilterCommand}" CommandParameter="{x:Static dto:WorkOrderListFilter.Open}" Style="{StaticResource FilterChipStyle}" />
+                <Button Text="In Progress" Command="{Binding ApplyFilterCommand}" CommandParameter="{x:Static dto:WorkOrderListFilter.InProgress}" Style="{StaticResource FilterChipStyle}" />
+                <Button Text="Completed" Command="{Binding ApplyFilterCommand}" CommandParameter="{x:Static dto:WorkOrderListFilter.Completed}" Style="{StaticResource FilterChipStyle}" />
+            </HorizontalStackLayout>
+        </ScrollView>
+
+        <Grid Grid.Row="2">
+            <CollectionView ItemsSource="{Binding WorkOrders}"
+                            SelectionMode="None">
+                <CollectionView.EmptyView>
+                    <VerticalStackLayout Padding="24" Spacing="8" VerticalOptions="Center">
+                        <Label Text="No work orders found" FontAttributes="Bold" HorizontalOptions="Center" />
+                        <Label Text="Try adjusting your search or filter." TextColor="{StaticResource Gray500}" HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+                </CollectionView.EmptyView>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="dto:WorkOrderDto">
+                        <Border Style="{StaticResource ListItemCardStyle}" Margin="0,0,0,10">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:WorkOrdersViewModel}}, Path=OpenWorkOrderCommand}"
+                                                      CommandParameter="{Binding .}" />
+                            </Border.GestureRecognizers>
+                            <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="8" RowSpacing="4">
+                                <Label Grid.Row="0" Grid.Column="0" Text="{Binding WorkOrderNumber}" FontAttributes="Bold" />
+                                <Border Grid.Row="0" Grid.Column="1"
+                                        BackgroundColor="{Binding Priority, Converter={StaticResource PriorityToColorConverter}}"
+                                        Padding="8,4">
+                                    <Label Text="{Binding Priority}" TextColor="White" FontSize="12" />
+                                </Border>
+
+                                <Label Grid.Row="1" Grid.ColumnSpan="2" Text="{Binding CustomerName}" TextColor="{StaticResource Gray600}" />
+                                <Label Grid.Row="2" Grid.ColumnSpan="2" Text="{Binding Title}" />
+
+                                <HorizontalStackLayout Grid.Row="3" Grid.ColumnSpan="2" Spacing="8">
+                                    <Border BackgroundColor="{Binding Status, Converter={StaticResource StatusToColorConverter}}" Padding="8,4">
+                                        <Label Text="{Binding Status, Converter={StaticResource EnumDisplayConverter}}" TextColor="White" FontSize="12" />
+                                    </Border>
+                                    <Label Text="{Binding DueDate, Converter={StaticResource DateTimeOffsetConverter}}" VerticalOptions="Center" TextColor="{StaticResource Gray500}" FontSize="12" />
+                                    <Label Text="Pending sync"
+                                           IsVisible="{Binding HasPendingSync}"
+                                           TextColor="#DC2626"
+                                           FontSize="12"
+                                           VerticalOptions="Center" />
+                                </HorizontalStackLayout>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center" HorizontalOptions="Center" />
+        </Grid>
+
+        <Border Grid.Row="2"
+                IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}"
+                BackgroundColor="#FEE2E2"
+                Stroke="#FCA5A5"
+                Padding="12"
+                VerticalOptions="Start">
+            <Label Text="{Binding ErrorMessage}" TextColor="#991B1B" />
+        </Border>
+    </Grid>
+</ContentPage>
