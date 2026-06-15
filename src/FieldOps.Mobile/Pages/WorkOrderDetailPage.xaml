@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:FieldOps.Mobile.ViewModels"
+             x:Class="FieldOps.Mobile.Pages.WorkOrderDetailPage"
+             x:DataType="vm:WorkOrderDetailViewModel"
+             Title="{Binding Title}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="16">
+
+            <Border Style="{StaticResource InfoPanelStyle}"
+                    IsVisible="{Binding IsCritical}"
+                    BackgroundColor="#FEE2E2"
+                    Stroke="#DC2626">
+                <Label Text="Critical priority work order"
+                       TextColor="#991B1B"
+                       FontAttributes="Bold" />
+            </Border>
+
+            <Border Style="{StaticResource InfoPanelStyle}">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="{Binding WorkOrder.CustomerName}" Style="{StaticResource Headline}" />
+                    <Label Text="{Binding WorkOrder.CustomerAddress}" TextColor="{StaticResource Gray600}" />
+
+                    <HorizontalStackLayout Spacing="8">
+                        <Border BackgroundColor="{Binding WorkOrder.Priority, Converter={StaticResource PriorityToColorConverter}}" Padding="8,4">
+                            <Label Text="{Binding WorkOrder.Priority}" TextColor="White" FontSize="12" />
+                        </Border>
+                        <Border BackgroundColor="{Binding WorkOrder.Status, Converter={StaticResource StatusToColorConverter}}" Padding="8,4">
+                            <Label Text="{Binding WorkOrder.Status, Converter={StaticResource EnumDisplayConverter}}" TextColor="White" FontSize="12" />
+                        </Border>
+                        <Label Text="{Binding WorkOrder.DueDate, Converter={StaticResource DateTimeOffsetConverter}}"
+                               VerticalOptions="Center"
+                               TextColor="{StaticResource Gray500}" />
+                    </HorizontalStackLayout>
+
+                    <Label Text="{Binding WorkOrder.Title}" FontAttributes="Bold" FontSize="18" />
+                    <Label Text="{Binding WorkOrder.Description}" TextColor="{StaticResource Gray600}" />
+
+                    <Label Text="Pending sync"
+                           IsVisible="{Binding WorkOrder.HasPendingSync}"
+                           TextColor="#DC2626"
+                           FontAttributes="Bold" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Label Text="Technician Notes" FontAttributes="Bold" />
+            <Editor Text="{Binding TechnicianNotes}"
+                    AutoSize="TextChanges"
+                    MinimumHeightRequest="120"
+                    IsReadOnly="{Binding IsCompleted}" />
+            <Label Text="Notes are required before marking a work order as completed (max 500 characters)."
+                   FontSize="12"
+                   TextColor="{StaticResource Gray500}" />
+
+            <Button Text="Save Notes"
+                    Command="{Binding SaveNotesCommand}"
+                    Style="{StaticResource SecondaryButtonStyle}"
+                    IsVisible="{Binding IsCompleted, Converter={StaticResource InverseBoolConverter}}" />
+
+            <Button Text="Start Work"
+                    Command="{Binding StartWorkCommand}"
+                    Style="{StaticResource PrimaryButtonStyle}"
+                    IsVisible="{Binding CanStartWork}" />
+
+            <Button Text="Mark Completed"
+                    Command="{Binding MarkCompletedCommand}"
+                    Style="{StaticResource PrimaryButtonStyle}"
+                    IsVisible="{Binding CanMarkCompleted}" />
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HorizontalOptions="Center" />
+
+            <Border IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}"
+                    BackgroundColor="#FEE2E2"
+                    Stroke="#FCA5A5"
+                    Padding="12">
+                <Label Text="{Binding ErrorMessage}" TextColor="#991B1B" />
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
